@@ -1,0 +1,55 @@
+
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'filestatistics'
+version = '1.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "info.picocli:picocli:4.7.5"
+    implementation "org.slf4j:slf4j-api:2.0.9"
+    implementation 'ch.qos.logback:logback-classic:1.5.13'
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.16.1"
+    implementation "commons-io:commons-io:2.14.0"
+    annotationProcessor "info.picocli:picocli-codegen:4.7.5"
+    compileOnly("org.projectlombok:lombok:1.18.42")
+    annotationProcessor("org.projectlombok:lombok:1.18.42")
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+application {
+    mainClass = "filestatistics.Main"
+}
+
+test {
+    useJUnitPlatform()
+    outputs.upToDateWhen { false }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': application.mainClass,
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
