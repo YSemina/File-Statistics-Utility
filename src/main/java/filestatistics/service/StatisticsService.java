@@ -7,6 +7,7 @@ import filestatistics.processor.FileProcessor;
 import filestatistics.statistics.TotalStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.io.IOException;
 import java.nio.file.Path;
 
 public class StatisticsService {
@@ -51,11 +52,19 @@ public class StatisticsService {
         }
     }
 
-    private Integer processWithConfig(AppConfig config, OutputFormat outputFormat) {
+    private Integer processWithConfig(AppConfig config, OutputFormat outputFormat) throws IOException {
         logger.info("Start processing with configuration: {}", config);
 
+        if (config == null) {
+            throw new IllegalArgumentException("Config cannot be null");
+        }
+
+        TotalStatistics statistics = fileProcessor.processDirectory(config);
+        if (statistics == null) {
+            throw new IllegalStateException("FileProcessor returned null statistics");
+        }
+
         try {
-            TotalStatistics statistics = fileProcessor.processDirectory(config);
             switch (outputFormat) {
                 case XML:
                     statistics.printXmlSummary();
