@@ -13,7 +13,7 @@ public class FileAnalyzer {
         int nonEmptyLines = 0;
         int commentLines = 0;
 
-        logger.info("Analyzing {} lines for extension: {}", totalLines, extension);
+        logger.debug("Analyzing {} lines for extension: {}", totalLines, extension);
 
         for (int i = 0; i < lines.size(); i++) {
             LineAnalysis lineAnalysis = analyzeLine(lines.get(i), extension, i + 1);
@@ -45,8 +45,8 @@ public class FileAnalyzer {
         boolean isEmpty = trimmed.isEmpty();
         boolean isComment = !isEmpty && CommentAnalyzer.isCommentLine(trimmed, extension);
 
-        logger.info("Line {}: '{}' (trimmed: '{}')", lineNumber, line, trimmed);
-        logger.info("Line {}: {}", lineNumber, isEmpty ? "EMPTY" : isComment ? "COMMENT" : "CODE");
+        logger.debug("Line {}: '{}' (trimmed: '{}')", lineNumber, line, trimmed);
+        logger.debug("Line {}: {}", lineNumber, isEmpty ? "EMPTY" : isComment ? "COMMENT" : "CODE");
 
         return new LineAnalysis(isEmpty, isComment);
     }

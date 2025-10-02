@@ -101,10 +101,10 @@ public class FileReader {
     }
 
     private void logFileContent(List<String> lines) {
-        logger.info("Lines found: {}", lines.size());
+        logger.debug("Lines found: {}", lines.size());
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
-            logger.info("Line {}: '{}' (empty: {})", i + 1, line, line.isEmpty());
+            logger.debug("Line {}: '{}' (empty: {})", i + 1, line, line.isEmpty());
         }
     }
 

@@ -1,27 +1,44 @@
 package filestatistics.statistics;
 
-import lombok.Getter;
+import lombok.NoArgsConstructor;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
-@Getter
+@NoArgsConstructor
 public class FileTypeStatistics {
 
-    private final String extension;
-    private int fileCount = 0;
-    private long totalSizeBytes = 0;
-    private int totalLines = 0;
-    private int totalNonEmptyLines = 0;
-    private int totalCommentLines = 0;
+    private final AtomicInteger fileCount = new AtomicInteger(0);
+    private final AtomicLong totalSizeBytes = new AtomicLong(0);
+    private final AtomicInteger totalLines = new AtomicInteger(0);
+    private final AtomicInteger totalNonEmptyLines = new AtomicInteger(0);
+    private final AtomicInteger totalCommentLines = new AtomicInteger(0);
 
-    public FileTypeStatistics(String extension) {
-        this.extension = extension;
+    public int getFileCount() {
+        return fileCount.get();
+    }
+
+    public long getTotalSizeBytes() {
+        return totalSizeBytes.get();
+    }
+
+    public int getTotalLines() {
+        return totalLines.get();
+    }
+
+    public int getTotalNonEmptyLines() {
+        return totalNonEmptyLines.get();
+    }
+
+    public int getTotalCommentLines() {
+        return totalCommentLines.get();
     }
 
     public void addFile(long sizeBytes, int totalLines, int nonEmptyLines, int commentLines) {
-        fileCount++;
-        totalSizeBytes += sizeBytes;
-        this.totalLines += totalLines;
-        totalNonEmptyLines += nonEmptyLines;
-        totalCommentLines += commentLines;
+        fileCount.incrementAndGet();
+        totalSizeBytes.addAndGet(sizeBytes);
+        this.totalLines.addAndGet(totalLines);
+        totalNonEmptyLines.addAndGet(nonEmptyLines);
+        totalCommentLines.addAndGet(commentLines);
     }
 
 }

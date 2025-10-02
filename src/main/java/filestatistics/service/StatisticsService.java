@@ -1,6 +1,7 @@
 package filestatistics.service;
 
 import filestatistics.cli.CommandLineArgs;
+import filestatistics.cli.OutputFormat;
 import filestatistics.config.AppConfig;
 import filestatistics.processor.FileProcessor;
 import filestatistics.statistics.TotalStatistics;
@@ -30,7 +31,7 @@ public class StatisticsService {
         try {
             validateParameters(args.getPath());
             AppConfig config = configBuilder.buildFromArgs(args);
-            return processWithConfig(config);
+            return processWithConfig(config, args.getOutputFormat());
 
         } catch (IllegalArgumentException e) {
             logger.error("Error in parameters: {}", e.getMessage());
@@ -50,12 +51,23 @@ public class StatisticsService {
         }
     }
 
-    private Integer processWithConfig(AppConfig config) {
+    private Integer processWithConfig(AppConfig config, OutputFormat outputFormat) {
         logger.info("Start processing with configuration: {}", config);
 
         try {
             TotalStatistics statistics = fileProcessor.processDirectory(config);
-            statistics.printSummary();
+            switch (outputFormat) {
+                case XML:
+                    statistics.printXmlSummary();
+                    break;
+                case JSON:
+                    statistics.printJsonSummary();
+                    break;
+                case PLAIN:
+                default:
+                    statistics.printSummary();
+                    break;
+            }
             logger.info("Processing completed successfully");
             return 0;
         } catch (Exception e) {

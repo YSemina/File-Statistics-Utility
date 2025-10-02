@@ -18,6 +18,12 @@ public class CommandLineArgs implements Callable<Integer> {
     @Parameters(index = "0", description = "Path to the directory being analyzed")
     private Path path;
 
+    @Option(names = {"--output", "-o"},
+            description = "Output format: plain, xml, json. Default: ${DEFAULT-VALUE}",
+            defaultValue = "plain",
+            converter = OutputFormat.OutputFormatConverter.class)
+    private OutputFormat outputFormat;
+
     @Option(names = "--include-ext", description = "Include only the specified extensions (comma separated)")
     private String includeExt;
 

@@ -17,10 +17,6 @@ public class FileUtils {
         return getExtension(file.getFileName().toString());
     }
 
-    public static boolean hasExtension(String fileName, String extension) {
-        return getExtension(fileName).equalsIgnoreCase(extension);
-    }
-
     public static List<String> splitLines(String content) {
         if (content == null || content.isEmpty()) {
             return List.of();
