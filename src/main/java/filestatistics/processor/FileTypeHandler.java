@@ -18,8 +18,8 @@ public class FileTypeHandler {
         statistics.addFile(extension, size, 0, 0, 0);
     }
 
-    public void handleScriptFile(Path file, String extension, long size, TotalStatistics statistics) {
-        List<String> lines = fileReader.readLines(file);
+    public void handleScriptFile(Path path, String extension, long size, TotalStatistics statistics) {
+        List<String> lines = fileReader.readLines(path);
         FileAnalyzer.FileAnalysisResult analysis = fileAnalyzer.analyzeScript(lines, extension);
         statistics.addFile(extension, size, analysis.totalLines(),
                 analysis.nonEmptyLines(), analysis.commentLines());

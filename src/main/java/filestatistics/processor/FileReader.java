@@ -14,21 +14,21 @@ public class FileReader {
 
     private static final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
-    public List<String> readLines(Path file) {
-        logger.info("Attempting to read file: {}", file.getFileName());
+    public List<String> readLines(Path path) {
+        logger.info("Attempting to read file: {}", path.getFileName());
 
         try {
-            byte[] fileBytes = Files.readAllBytes(file);
+            byte[] fileBytes = Files.readAllBytes(path);
             Charset charset = detectCharsetByBOM(fileBytes);
             if (charset == null) {
                 charset = StandardCharsets.UTF_8;
             }
 
-            logger.info("Detected charset: {}", charset.name());
+            logger.debug("Detected charset: {}", charset.name());
             return readFileContent(fileBytes, charset);
 
         } catch (IOException e) {
-            logger.error("Error reading file: {}", file.getFileName(), e);
+            logger.error("Error reading file: {}", path.getFileName(), e);
             return List.of();
         }
     }
@@ -56,13 +56,15 @@ public class FileReader {
             if (c == '\n') {
                 lines.add(currentLine.toString());
                 currentLine.setLength(0);
-            } else if (c == '\r') {
+            }
+            else if (c == '\r') {
                 lines.add(currentLine.toString());
                 currentLine.setLength(0);
                 if (i + 1 < content.length() && content.charAt(i + 1) == '\n') {
                     i++;
                 }
-            } else {
+            }
+            else {
                 currentLine.append(c);
             }
         }

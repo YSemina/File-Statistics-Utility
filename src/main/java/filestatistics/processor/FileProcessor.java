@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 public class FileProcessor {
 
@@ -21,16 +22,17 @@ public class FileProcessor {
     public TotalStatistics processDirectory(AppConfig config) throws IOException {
         TotalStatistics statistics = new TotalStatistics();
 
-        Files.list(config.getPath())
-                .filter(Files::isRegularFile)
-                .filter(file -> shouldProcessFile(file, config))
-                .forEach(file -> processFileSafe(file, statistics));
+        try (Stream<Path> filesStream = Files.list(config.getPath())) {
+            filesStream.filter(Files::isRegularFile)
+                    .filter(path -> shouldProcessByExtension(path, config))
+                    .forEach(file -> processFileSafe(file, statistics));
+        }
 
         return statistics;
     }
 
-    private boolean shouldProcessFile(Path file, AppConfig config) {
-        String extension = FileUtils.getExtension(file);
+    private boolean shouldProcessByExtension(Path path, AppConfig config) {
+        String extension = FileUtils.getExtension(path);
 
         if (!config.getExcludeExtensions().isEmpty() &&
                 config.getExcludeExtensions().contains(extension)) {
@@ -41,29 +43,29 @@ public class FileProcessor {
                 config.getIncludeExtensions().contains(extension);
     }
 
-    private void processFileSafe(Path file, TotalStatistics statistics) {
+    private void processFileSafe(Path path, TotalStatistics statistics) {
         try {
-            processSingleFile(file, statistics);
+            processSingleFile(path, statistics);
         } catch (Exception e) {
-            logger.warn("Skipping file due to error: {} - {}", file.getFileName(), e.getMessage());
+            logger.warn("Skipping file due to error: {} - {}", path.getFileName(), e.getMessage());
         }
     }
 
-    private void processSingleFile(Path file, TotalStatistics statistics) throws IOException {
-        long size = Files.size(file);
-        String extension = FileUtils.getExtension(file.getFileName().toString());
+    private void processSingleFile(Path path, TotalStatistics statistics) throws IOException {
+        long size = Files.size(path);
+        String extension = FileUtils.getExtension(path);
 
         logger.debug("Processing file: {}, extension: {}, size: {} bytes",
-                file.getFileName(), extension, size);
+                path.getFileName(), extension, size);
 
         if (FileTypeDetector.BINARY_EXTENSIONS.contains(extension)) {
             fileTypeHandler.handleBinaryFile(extension, size, statistics);
         }
         else if (FileTypeDetector.SCRIPT_EXTENSIONS.contains(extension)) {
-            fileTypeHandler.handleScriptFile(file, extension, size, statistics);
+            fileTypeHandler.handleScriptFile(path, extension, size, statistics);
         }
         else if (FileTypeDetector.TEXT_EXTENSIONS.contains(extension)) {
-            fileTypeHandler.handleTextFile(file, extension, size, statistics);
+            fileTypeHandler.handleTextFile(path, extension, size, statistics);
         }
         else {
             fileTypeHandler.handleUnknownFile(extension, size, statistics);

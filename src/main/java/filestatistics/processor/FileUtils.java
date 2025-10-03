@@ -13,8 +13,8 @@ public class FileUtils {
                 : fileName.substring(dotIndex + 1).toLowerCase();
     }
 
-    public static String getExtension(Path file) {
-        return getExtension(file.getFileName().toString());
+    public static String getExtension(Path path) {
+        return getExtension(path.getFileName().toString());
     }
 
     public static List<String> splitLines(String content) {
